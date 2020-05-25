@@ -2,6 +2,8 @@
 
 namespace rocketfy\rocketMail;
 
+use App\Role;
+use App\Country;
 use RegexIterator;
 use ErrorException;
 use ReflectionClass;
@@ -16,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Container\Container;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Artisan;
+use rocketfy\rocketMail\Models\Newsletter;
 use Illuminate\Database\Eloquent\Factory as EloquentFactory;
 
 class rocketMail
@@ -908,5 +911,121 @@ class rocketMail
         $replaced = str_replace(array('\r', '\n', '\t', '\v'), array("\r", "\n", "\t", "\v"), $new);
 
         file_put_contents($mailFile, $replaced);
+    }
+
+    public static function getNewsletters()
+    {
+        return Newsletter::all();
+    }
+    public static function getNewsletter($id)
+    {
+        $new = Newsletter::find($id);
+        if ($new) {
+            $filters = [];
+            foreach ($new->filters as $key => $value) {
+                if ($key == 'role_id') {
+                    $role = Role::where('id', $value)->first()->name;
+                    $filters['Rol'] = $role;
+                } else if ($key == 'country_id'){
+                    $country = Country::where('id', intval($value))->first()->name;
+                    $filters['País'] = $country;
+                }
+            }
+            $new = [
+                'new' => $new,
+                'filters' => $filters,
+            ];
+        } else {
+            $new = NULL;
+        }
+        return $new;
+    }
+
+    public static function updateNewsletter($request)
+    {
+        if ($request->fromDetails) {
+            $new = Newsletter::find($request->newsletter_id);
+            $new->title = $request->title;
+            $new->save();
+            return response()->json(['data' => ['id' => $new->id], 'status' => 'ok'], 200);
+        }
+        /* $template = self::getTemplates()
+            ->where('template_slug', $request->templateslug)->first();
+
+        if (! is_null($template)) {
+            if (! preg_match("/^[a-zA-Z0-9-_\s]+$/", $request->title)) {
+                return response()->json([
+                    'status' => 'failed',
+                    'message' => 'El nombre no es válido',
+                ]);
+            }
+
+            $templatename = Str::camel(preg_replace('/\s+/', '_', $request->title));
+
+            // check if not already exists on db
+            //
+            //
+
+            if (self::getTemplates()->contains('template_slug', '=', $templatename)) {
+                return response()->json([
+
+                    'status' => 'failed',
+                    'message' => 'Ya existe una plantilla con ese nombre',
+
+                ]);
+            }
+
+            // Update
+            //
+            $oldForm = self::getTemplates()->reject(function ($value, $key) use ($template) {
+                return $value->template_slug == $template->template_slug;
+            });
+            $newForm = array_merge($oldForm->toArray(), [array_merge((array) $template, [
+                'template_slug' => $templatename,
+                'template_name' => $request->title,
+                'template_description' => $request->description,
+            ])]);
+            $usingTemplate = self::getMailables()->filter(function ($mail) use ($template) {
+                return false !== stristr($mail['view_path'], $template->template_slug);
+            });
+
+            self::saveTemplates(collect($newForm));
+
+            $template_view = self::$view_namespace.'::templates.'.$request->templateslug;
+            $template_plaintext_view = $template_view.'_plain_text';
+
+            if (View::exists($template_view)) {
+                $viewPath = View($template_view)->getPath();
+
+                rename($viewPath, dirname($viewPath)."/{$templatename}.blade.php");
+
+                if (View::exists($template_plaintext_view)) {
+                    $textViewPath = View($template_plaintext_view)->getPath();
+
+                    rename($textViewPath, dirname($viewPath)."/{$templatename}_plain_text.blade.php");
+                }
+            }
+
+            foreach ($usingTemplate as $key => $mail) {
+                $mail_file = $mail['path_name'];
+                $view_path = $mail['view_path'];
+                $currentTemplate = substr(explode('/',$view_path)[count(explode('/',$view_path)) - 1], 0, -10);
+                
+                $selectedTemplate = $templatename;
+                
+                $mail_file_content = file_get_contents($mail_file);
+                $newMail = str_replace($currentTemplate, $selectedTemplate, $mail_file_content);
+                file_put_contents($mail_file, $newMail);
+                $mail_file_content = file_get_contents($mail_file);
+            }
+
+            return response()->json([
+
+                'status' => 'ok',
+                'message' => 'Actualizado correctamente',
+                'template_url' => route('backetfy.mails.viewTemplate', ['templatename' => $templatename]),
+
+            ]);
+        } */
     }
 }

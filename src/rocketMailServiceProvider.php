@@ -96,5 +96,9 @@ class rocketMailServiceProvider extends ServiceProvider
         $this->publishes([
                 __DIR__.'/../resources/views/templates' => $this->app->resourcePath('views/vendor/rocketmail/templates'),
             ], 'rocketmail.templates');
+
+        $this->publishes([
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
+            ], 'rocketmail.migrations');
     }
 }

@@ -13,6 +13,16 @@ Route::group(['prefix' => 'plantillas'], function () {
     Route::post('preview', 'TemplatesController@previewTemplateMarkdownView')->name('backetfy.mails.previewTemplateMarkdownView');
 });
 
+Route::group(['prefix' => 'newsletters'], function () {
+    Route::get('/', 'NewslettersController@index')->name('backetfy.mails.newsletters');
+    Route::get('/edit/{newsletter_id}', 'NewslettersController@view')->name('backetfy.mails.viewNewsletter');
+    Route::get('new', 'NewslettersController@select')->name('backetfy.mails.selectNewsletter');
+    Route::post('delete', 'NewslettersController@delete')->name('backetfy.mails.deleteNewsletter');
+    Route::post('update', 'NewslettersController@update')->name('backetfy.mails.updateNewsletter');
+    Route::post('parse/newsletter', 'NewslettersController@parseNewsletter')->name('backetfy.mails.parseNewsletter');
+    Route::post('new', 'NewslettersController@create')->name('backetfy.mails.createNewsletter');
+});
+
 Route::group(['prefix' => 'acciones'], function () {
     Route::get('/', 'MailablesController@index')->name('backetfy.mails.mailableList');
     Route::get('view/{name}', 'MailablesController@viewMailable')->name('backetfy.mails.viewMailable');

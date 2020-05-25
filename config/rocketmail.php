@@ -2,6 +2,9 @@
 
 return [
 
+    'default_mail' => 'rocketmail@rocketfy.es',
+    'default_name' => 'Rocketfy',
+
     /*
     |--------------------------------------------------------------------------
     | RocketMail Path
