@@ -54,7 +54,7 @@ class SendNewsletters extends Command
             }
             $users->map(function ($user) use ($new) {
                 $args = [];
-                $args['email'] = 'jose.gomez@rocketfy.es';
+                $args['email'] = $user->email;
                 $args['name'] = $user->name;
                 $args['title'] = $new->title;
                 $args['content'] = $new->content;

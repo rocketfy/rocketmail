@@ -1,6 +1,6 @@
-#Rocketmail for backetfy
+# Rocketmail for backetfy
 
-##Instalación
+## Instalación
 
 ```bash
 composer require rocketfy/rocketmail
